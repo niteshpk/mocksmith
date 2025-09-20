@@ -4,7 +4,7 @@ import promBundle from 'express-prom-bundle';
 import helmet from 'helmet';
 import swaggerUi from 'swagger-ui-express';
 
-import { getOpenApiSpec } from './docs/openapi';
+import { getOpenApiDocument } from './docs/openapi';
 import { errorHandler } from './middleware/error';
 import { requestLogger } from './middleware/logging';
 import { apiRouter } from './routes';
@@ -35,7 +35,7 @@ export function createApp() {
   app.use('/api', apiRouter);
 
   // OpenAPI spec + Swagger UI (serve spec via URL to avoid inline JSON parsing issues)
-  const spec = getOpenApiSpec();
+  const spec = getOpenApiDocument();
   app.get('/docs.json', (_req, res) => res.json(spec));
   app.use(
     '/docs',

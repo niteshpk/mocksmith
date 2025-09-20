@@ -1,6 +1,6 @@
 {
   "info": {
-    "name": "JSONPlaceholder-Clone API",
+    "name": "MockSmith API",
     "_postman_id": "a9b4b1d1-2b6b-4a84-9b67-8f2fb1c2a9e0",
     "description": "Collection with explicit URL parts so the address bar always shows correctly. Covers health, docs, metrics, and CRUD for users, posts, comments, todos with pagination & filters.",
     "schema": "https://schema.getpostman.com/collection/v2.1.0/collection.json"

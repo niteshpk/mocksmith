@@ -265,10 +265,10 @@ export function getOpenApiDocument() {
   return generator.generateDocument({
     openapi: '3.0.0',
     info: {
-      title: 'JSONPlaceholder Clone API',
+      title: 'MockSmith API',
       version: '1.0.0',
       description:
-        'A JSONPlaceholder-compatible API built with Express + TypeScript + Zod. Pagination via `_page` & `_limit`.',
+        'A MockSmith API built with Express + TypeScript + Zod. Pagination via `_page` & `_limit`.',
     },
     servers: [{ url: '/' }],
   });
