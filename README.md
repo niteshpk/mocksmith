@@ -13,6 +13,10 @@ A production-ready example backend that mirrors the core resources from https://
 - **Vitest** (unit & integration), **ESLint**, **Prettier**
 - **Vite** for testing/dev tooling
 
+## Postman Collection Details
+- [Postman Collection](./jsonplaceholder-api.postman_collection.json)
+- [Postman Environment](./jsonplaceholder-local.postman_environment.json)
+
 ## Getting Started
 
 ```bash
