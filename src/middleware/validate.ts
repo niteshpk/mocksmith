@@ -1,5 +1,5 @@
-import { ZodSchema } from 'zod';
 import { Request, Response, NextFunction } from 'express';
+import { ZodSchema } from 'zod';
 
 export function validateBody<T>(schema: ZodSchema<T>) {
   return (req: Request, res: Response, next: NextFunction) => {
@@ -18,7 +18,7 @@ export function validateParams<T>(schema: ZodSchema<T>) {
     if (!parsed.success) {
       return res.status(400).json({ error: 'ValidationError', details: parsed.error.flatten() });
     }
-    req.params = parsed.data as any;
+    req.params = parsed.data as never;
     next();
   };
 }
@@ -29,7 +29,7 @@ export function validateQuery<T>(schema: ZodSchema<T>) {
     if (!parsed.success) {
       return res.status(400).json({ error: 'ValidationError', details: parsed.error.flatten() });
     }
-    req.query = parsed.data as any;
+    req.query = parsed.data as never;
     next();
   };
 }

@@ -1,12 +1,13 @@
-import express from 'express';
 import cors from 'cors';
+import express from 'express';
+import promBundle from 'express-prom-bundle';
 import helmet from 'helmet';
-import { apiRouter } from './routes';
+import swaggerUi from 'swagger-ui-express';
+
+import { getOpenApiSpec } from './docs/openapi';
 import { errorHandler } from './middleware/error';
 import { requestLogger } from './middleware/logging';
-import promBundle from 'express-prom-bundle';
-import swaggerUi from 'swagger-ui-express';
-import { getOpenApiSpec } from './docs/openapi';
+import { apiRouter } from './routes';
 
 export function createApp() {
   const app = express();

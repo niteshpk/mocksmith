@@ -1,11 +1,13 @@
 import { Request, Response } from 'express';
+
 import { UsersService } from '../services/users.service';
 import { HttpStatus } from '../utils/httpStatus';
 
 export const UsersController = {
   list: (req: Request, res: Response) => {
-    const page = Number((req.query as any)._page ?? 1);
-    const limit = Number((req.query as any)._limit ?? 10);
+    const query = req.query as Record<string, string>;
+    const page = Number(query._page ?? '1');
+    const limit = Number(query._limit ?? '10');
     const offset = (page - 1) * limit;
     const items = UsersService.list({ limit, offset });
     const total = UsersService.count();

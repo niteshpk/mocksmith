@@ -1,12 +1,20 @@
 import { Request, Response } from 'express';
+
 import { PostsService } from '../services/posts.service';
 import { HttpStatus } from '../utils/httpStatus';
 
+interface PostsQuery {
+  _page?: string;
+  _limit?: string;
+  userId?: string;
+}
+
 export const PostsController = {
   list: (req: Request, res: Response) => {
-    const page = Number((req.query as any)._page ?? 1);
-    const limit = Number((req.query as any)._limit ?? 10);
-    const userId = (req.query as any).userId ? Number((req.query as any).userId) : undefined;
+    const query = req.query as PostsQuery;
+    const page = Number(query._page ?? 1);
+    const limit = Number(query._limit ?? 10);
+    const userId = query.userId ? Number(query.userId) : undefined;
     const offset = (page - 1) * limit;
     const items = PostsService.list({ limit, offset, userId });
     const total = PostsService.count({ userId });

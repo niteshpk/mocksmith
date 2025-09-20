@@ -1,9 +1,10 @@
 import { Router } from 'express';
-import { usersRouter } from './users.routes';
-import { postsRouter } from './posts.routes';
+
 import { commentsRouter } from './comments.routes';
-import { todosRouter } from './todos.routes';
 import { healthRouter } from './health.routes';
+import { postsRouter } from './posts.routes';
+import { todosRouter } from './todos.routes';
+import { usersRouter } from './users.routes';
 
 export const apiRouter = Router();
 

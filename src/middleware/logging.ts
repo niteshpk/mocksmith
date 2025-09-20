@@ -1,7 +1,8 @@
+import { createRequire } from 'module';
 import pino from 'pino';
 import pinoHttp from 'pino-http';
+
 import { env } from '../config/env';
-import { createRequire } from 'module';
 
 const require = createRequire(import.meta.url);
 

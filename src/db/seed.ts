@@ -66,7 +66,3 @@ const seed = db.transaction(() => {
 });
 
 seed();
-
-console.log(
-  `Seed complete. Inserted ${USER_COUNT} users, ${POST_COUNT} posts, ${COMMENT_COUNT} comments, ${TODO_COUNT} todos.`,
-);

@@ -6,8 +6,8 @@ export class TodosService {
     const rows = opts.userId
       ? (db
           .prepare('SELECT * FROM todos WHERE userId = ? LIMIT ? OFFSET ?')
-          .all(opts.userId, opts.limit, opts.offset) as any[])
-      : (db.prepare('SELECT * FROM todos LIMIT ? OFFSET ?').all(opts.limit, opts.offset) as any[]);
+          .all(opts.userId, opts.limit, opts.offset) as Todo[])
+      : (db.prepare('SELECT * FROM todos LIMIT ? OFFSET ?').all(opts.limit, opts.offset) as Todo[]);
     return rows.map((r) => ({ ...r, completed: !!r.completed }));
   }
   static count(filter?: { userId?: number }): number {
@@ -21,11 +21,11 @@ export class TodosService {
     return row.c;
   }
   static get(id: number): Todo | undefined {
-    const row = db.prepare('SELECT * FROM todos WHERE id = ?').get(id) as any;
+    const row = db.prepare('SELECT * FROM todos WHERE id = ?').get(id) as Todo | undefined;
     return row ? { ...row, completed: !!row.completed } : undefined;
   }
   static listByUser(userId: number): Todo[] {
-    const rows = db.prepare('SELECT * FROM todos WHERE userId = ?').all(userId) as any[];
+    const rows = db.prepare('SELECT * FROM todos WHERE userId = ?').all(userId) as Todo[];
     return rows.map((r) => ({ ...r, completed: !!r.completed }));
   }
   static create(input: Omit<Todo, 'id'>): Todo {

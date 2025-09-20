@@ -1,9 +1,10 @@
 import { Router } from 'express';
 import { z } from 'zod';
+
 import { CommentsController } from '../controllers/comments.controller';
 import { validateBody, validateParams, validateQuery } from '../middleware/validate';
-import { idParam, paginationQuery } from '../schemas/common';
 import { commentCreateSchema, commentUpdateSchema } from '../schemas/comment.schema';
+import { idParam, paginationQuery } from '../schemas/common';
 
 export const commentsRouter = Router();
 

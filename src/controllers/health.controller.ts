@@ -1,6 +1,7 @@
-import type { Request, Response } from 'express';
-import { db } from '../db/sqlite';
 import { createRequire } from 'module';
+
+import { db } from '../db/sqlite';
+import type { Request, Response } from 'express';
 
 const require = createRequire(import.meta.url);
 const pkg = require('../../package.json');
@@ -12,8 +13,8 @@ function getDbStatus() {
     const quickCheck = row?.quick_check ?? 'unknown';
     const ok = quickCheck.toLowerCase() === 'ok';
     return { ok, quickCheck };
-  } catch (e: any) {
-    return { ok: false, quickCheck: String(e?.message ?? e) };
+  } catch (e: unknown) {
+    return { ok: false, quickCheck: String((e as Error)?.message ?? e) };
   }
 }
 

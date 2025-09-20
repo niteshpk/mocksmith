@@ -1,7 +1,8 @@
 import request from 'supertest';
-import { createApp } from '../src/app';
-import { resetAndSeed } from './helpers';
 import { beforeEach, describe, it, expect } from 'vitest';
+
+import { resetAndSeed } from './helpers';
+import { createApp } from '../src/app';
 
 const app = createApp();
 

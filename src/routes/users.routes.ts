@@ -1,4 +1,5 @@
 import { Router } from 'express';
+
 import { UsersController } from '../controllers/users.controller';
 import { validateBody, validateParams, validateQuery } from '../middleware/validate';
 import { idParam, paginationQuery } from '../schemas/common';

@@ -1,12 +1,19 @@
 import { Request, Response } from 'express';
+
 import { TodosService } from '../services/todos.service';
 import { HttpStatus } from '../utils/httpStatus';
 
 export const TodosController = {
   list: (req: Request, res: Response) => {
-    const page = Number((req.query as any)._page ?? 1);
-    const limit = Number((req.query as any)._limit ?? 10);
-    const userId = (req.query as any).userId ? Number((req.query as any).userId) : undefined;
+    interface TodosQuery {
+      _page?: string;
+      _limit?: string;
+      userId?: string;
+    }
+    const query = req.query as TodosQuery;
+    const page = Number(query._page ?? 1);
+    const limit = Number(query._limit ?? 10);
+    const userId = query.userId ? Number(query.userId) : undefined;
     const offset = (page - 1) * limit;
     const items = TodosService.list({ limit, offset, userId });
     const total = TodosService.count({ userId });

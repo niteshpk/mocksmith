@@ -1,6 +1,8 @@
 import request from 'supertest';
-import { createApp } from '../src/app';
+import { beforeEach, describe, it, expect } from 'vitest';
+
 import { resetAndSeed } from './helpers';
+import { createApp } from '../src/app';
 
 const app = createApp();
 
@@ -14,7 +16,7 @@ describe('Comments API', () => {
     expect(res.body.length).toBeGreaterThanOrEqual(1);
   });
 
-  it('GET /api/comments/:id -> 200 / 404', async () => {
+  it('GET /api/comments/:id -> 200 / 404', async () => { 
     const ok = await request(app).get('/api/comments/1');
     expect(ok.status).toBe(200);
     const miss = await request(app).get('/api/comments/999');

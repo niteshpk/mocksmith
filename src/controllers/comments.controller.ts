@@ -1,12 +1,19 @@
 import { Request, Response } from 'express';
+
 import { CommentsService } from '../services/comments.service';
 import { HttpStatus } from '../utils/httpStatus';
 
 export const CommentsController = {
   list: (req: Request, res: Response) => {
-    const page = Number((req.query as any)._page ?? 1);
-    const limit = Number((req.query as any)._limit ?? 10);
-    const postId = (req.query as any).postId ? Number((req.query as any).postId) : undefined;
+    interface CommentsQuery {
+      _page?: string;
+      _limit?: string;
+      postId?: string;
+    }
+    const query = req.query as CommentsQuery;
+    const page = Number(query._page ?? 1);
+    const limit = Number(query._limit ?? 10);
+    const postId = query.postId ? Number(query.postId) : undefined;
     const offset = (page - 1) * limit;
     const items = CommentsService.list({ limit, offset, postId });
     const total = CommentsService.count({ postId });

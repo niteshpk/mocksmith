@@ -4,152 +4,272 @@ import {
   extendZodWithOpenApi,
 } from '@asteasolutions/zod-to-openapi';
 import { z } from 'zod';
-import { userCreateSchema, userResponseSchema, userUpdateSchema } from '../schemas/user.schema';
-import { postCreateSchema, postResponseSchema, postUpdateSchema } from '../schemas/post.schema';
-import {
-  commentCreateSchema,
-  commentResponseSchema,
-  commentUpdateSchema,
-} from '../schemas/comment.schema';
-import { todoCreateSchema, todoResponseSchema, todoUpdateSchema } from '../schemas/todo.schema';
 
 extendZodWithOpenApi(z);
 
 const registry = new OpenAPIRegistry();
 
-// Error component
-const ErrorResponse = z.object({
-  error: z.string(),
-  message: z.string(),
-  details: z.any().optional(),
-});
-registry.registerComponent('schemas', 'ErrorResponse', ErrorResponse);
+/** ---------- Schemas ---------- */
+const _ErrorResponse = registry.register(
+  'ErrorResponse',
+  z.object({
+    error: z.string().openapi({ example: 'BadRequest' }),
+    message: z.string().openapi({ example: 'Invalid input' }),
+    details: z.any().optional(),
+  }),
+);
 
-// List query schemas
-const basePage = z.object({
-  _page: z.number().int().positive().optional(),
-  _limit: z.number().int().positive().max(100).optional(),
-});
-const usersListQuery = basePage;
-const postsListQuery = basePage.extend({ userId: z.number().int().positive().optional() });
-const commentsListQuery = basePage.extend({ postId: z.number().int().positive().optional() });
-const todosListQuery = basePage.extend({ userId: z.number().int().positive().optional() });
+const _User = registry.register(
+  'User',
+  z.object({
+    id: z.number().int().openapi({ example: 1 }),
+    name: z.string().openapi({ example: 'Leanne Graham' }),
+    username: z.string().openapi({ example: 'Bret' }),
+    email: z.string().email().openapi({ example: 'lea@example.com' }),
+  }),
+);
 
-function crudPaths(
-  resource: string,
-  createSchema: z.ZodTypeAny,
-  updateSchema: z.ZodTypeAny,
-  responseSchema: z.ZodTypeAny,
-  listQuery?: z.ZodTypeAny,
-) {
+const CreateUserBody = z.object({
+  name: z.string(),
+  username: z.string(),
+  email: z.string().email(),
+});
+const UpdateUserBody = CreateUserBody.partial();
+
+const _Post = registry.register(
+  'Post',
+  z.object({
+    id: z.number().int().openapi({ example: 1 }),
+    userId: z.number().int().openapi({ example: 1 }),
+    title: z.string().openapi({ example: 'Hello' }),
+    body: z.string().openapi({ example: 'World' }),
+  }),
+);
+
+const CreatePostBody = z.object({
+  userId: z.number().int(),
+  title: z.string(),
+  body: z.string(),
+});
+const UpdatePostBody = CreatePostBody.partial();
+
+const _Comment = registry.register(
+  'Comment',
+  z.object({
+    id: z.number().int().openapi({ example: 1 }),
+    postId: z.number().int().openapi({ example: 1 }),
+    name: z.string(),
+    email: z.string().email(),
+    body: z.string(),
+  }),
+);
+
+const CreateCommentBody = z.object({
+  postId: z.number().int(),
+  name: z.string(),
+  email: z.string().email(),
+  body: z.string(),
+});
+const UpdateCommentBody = CreateCommentBody.partial();
+
+const _Todo = registry.register(
+  'Todo',
+  z.object({
+    id: z.number().int().openapi({ example: 1 }),
+    userId: z.number().int().openapi({ example: 1 }),
+    title: z.string(),
+    completed: z.boolean().openapi({ example: false }),
+  }),
+);
+
+const CreateTodoBody = z.object({
+  userId: z.number().int(),
+  title: z.string(),
+  completed: z.boolean().default(false),
+});
+const UpdateTodoBody = CreateTodoBody.partial();
+
+/** ---------- helpers for $ref SchemaObjects ---------- */
+const ref = (name: string) => ({ $ref: `#/components/schemas/${name}` }) as const;
+const refArray = (name: string) =>
+  ({ type: 'array', items: { $ref: `#/components/schemas/${name}` } }) as const;
+
+/** ---------- Paths (use $ref in responses to satisfy types) ---------- */
+function registerCrudPaths(resource: {
+  base: string;
+  name: 'User' | 'Post' | 'Comment' | 'Todo';
+  createBody: z.ZodTypeAny;
+  updateBody: z.ZodTypeAny;
+  listQuery?: z.ZodTypeAny;
+}) {
+  const { base, name, createBody, updateBody, listQuery } = resource;
+
+  // List
   registry.registerPath({
     method: 'get',
-    path: `/api/${resource}`,
-    request: listQuery ? { query: listQuery } : undefined,
+    path: base,
+    summary: `List ${name}s`,
+    request: {
+      query: listQuery
+        ? (listQuery.openapi({}) as never)
+        : (z
+            .object({
+              _page: z.coerce.number().int().min(1).default(1).openapi({ example: 1 }),
+              _limit: z.coerce.number().int().min(1).max(100).default(10).openapi({ example: 10 }),
+            })
+            .openapi({}) as never),
+    },
     responses: {
       200: {
-        description: 'List',
-        headers: {
-          'X-Total-Count': {
-            schema: { type: 'string' },
-            description: 'Total items for the query (for pagination)',
-          },
-        },
-        content: { 'application/json': { schema: z.array(responseSchema) } },
+        description: `Array of ${name}`,
+        content: { 'application/json': { schema: refArray(name) } },
+      },
+      400: {
+        description: 'Bad Request',
+        content: { 'application/json': { schema: ref('ErrorResponse') } },
       },
     },
   });
 
+  // Get by id
   registry.registerPath({
     method: 'get',
-    path: `/api/${resource}/{id}`,
-    request: { params: z.object({ id: z.number() }) },
+    path: `${base}/{id}`,
+    summary: `Get ${name} by id`,
+    request: { params: z.object({ id: z.coerce.number().int() }) },
     responses: {
-      200: { description: 'Item', content: { 'application/json': { schema: responseSchema } } },
+      200: {
+        description: name,
+        content: { 'application/json': { schema: ref(name) } },
+      },
       404: {
-        description: 'Not found',
-        content: { 'application/json': { schema: ErrorResponse } },
+        description: 'Not Found',
+        content: { 'application/json': { schema: ref('ErrorResponse') } },
       },
     },
   });
 
+  // Create
   registry.registerPath({
     method: 'post',
-    path: `/api/${resource}`,
-    request: { body: { content: { 'application/json': { schema: createSchema } } } },
-    responses: {
-      201: { description: 'Created', content: { 'application/json': { schema: responseSchema } } },
-    },
-  });
-
-  registry.registerPath({
-    method: 'put',
-    path: `/api/${resource}/{id}`,
+    path: base,
+    summary: `Create ${name}`,
     request: {
-      params: z.object({ id: z.number() }),
-      body: { content: { 'application/json': { schema: updateSchema } } },
+      body: {
+        content: { 'application/json': { schema: createBody } }, // Zod is OK in request
+      },
     },
     responses: {
-      200: { description: 'Updated', content: { 'application/json': { schema: responseSchema } } },
-      404: {
-        description: 'Not found',
-        content: { 'application/json': { schema: ErrorResponse } },
+      201: {
+        description: `${name} created`,
+        content: { 'application/json': { schema: ref(name) } },
+      },
+      400: {
+        description: 'Bad Request',
+        content: { 'application/json': { schema: ref('ErrorResponse') } },
       },
     },
   });
 
+  // Update
+  registry.registerPath({
+    method: 'put',
+    path: `${base}/{id}`,
+    summary: `Update ${name}`,
+    request: {
+      params: z.object({ id: z.coerce.number().int() }),
+      body: { content: { 'application/json': { schema: updateBody } } },
+    },
+    responses: {
+      200: {
+        description: name,
+        content: { 'application/json': { schema: ref(name) } },
+      },
+      400: {
+        description: 'Bad Request',
+        content: { 'application/json': { schema: ref('ErrorResponse') } },
+      },
+      404: {
+        description: 'Not Found',
+        content: { 'application/json': { schema: ref('ErrorResponse') } },
+      },
+    },
+  });
+
+  // Delete
   registry.registerPath({
     method: 'delete',
-    path: `/api/${resource}/{id}`,
-    request: { params: z.object({ id: z.number() }) },
+    path: `${base}/{id}`,
+    summary: `Delete ${name}`,
+    request: { params: z.object({ id: z.coerce.number().int() }) },
     responses: {
-      204: { description: 'Deleted' },
+      204: { description: 'No Content' },
       404: {
-        description: 'Not found',
-        content: { 'application/json': { schema: ErrorResponse } },
+        description: 'Not Found',
+        content: { 'application/json': { schema: ref('ErrorResponse') } },
       },
     },
   });
 }
 
-crudPaths('users', userCreateSchema, userUpdateSchema, userResponseSchema, usersListQuery);
-crudPaths('posts', postCreateSchema, postUpdateSchema, postResponseSchema, postsListQuery);
-crudPaths(
-  'comments',
-  commentCreateSchema,
-  commentUpdateSchema,
-  commentResponseSchema,
-  commentsListQuery,
-);
-crudPaths('todos', todoCreateSchema, todoUpdateSchema, todoResponseSchema, todosListQuery);
+// Users (list can be filtered/paginated)
+registerCrudPaths({
+  base: '/api/users',
+  name: 'User',
+  createBody: CreateUserBody,
+  updateBody: UpdateUserBody,
+});
 
-// API health (unchanged)
-const HealthResponse = z.object({
-  status: z.string(),
-  uptime: z.number(),
-  timestamp: z.string(),
-  version: z.string(),
-  db: z.object({
-    ok: z.boolean(),
-    quickCheck: z.string(),
+// Posts (allow filter by userId)
+registerCrudPaths({
+  base: '/api/posts',
+  name: 'Post',
+  createBody: CreatePostBody,
+  updateBody: UpdatePostBody,
+  listQuery: z.object({
+    userId: z.coerce.number().int().optional().openapi({ example: 1 }),
+    _page: z.coerce.number().int().min(1).default(1),
+    _limit: z.coerce.number().int().min(1).max(100).default(10),
   }),
 });
-registry.registerPath({
-  method: 'get',
-  path: '/api/health',
-  responses: {
-    200: {
-      description: 'Service health status',
-      content: { 'application/json': { schema: HealthResponse } },
-    },
-  },
+
+// Comments (allow filter by postId)
+registerCrudPaths({
+  base: '/api/comments',
+  name: 'Comment',
+  createBody: CreateCommentBody,
+  updateBody: UpdateCommentBody,
+  listQuery: z.object({
+    postId: z.coerce.number().int().optional().openapi({ example: 1 }),
+    _page: z.coerce.number().int().min(1).default(1),
+    _limit: z.coerce.number().int().min(1).max(100).default(10),
+  }),
 });
 
-export function getOpenApiSpec() {
+// Todos (allow filter by userId)
+registerCrudPaths({
+  base: '/api/todos',
+  name: 'Todo',
+  createBody: CreateTodoBody,
+  updateBody: UpdateTodoBody,
+  listQuery: z.object({
+    userId: z.coerce.number().int().optional().openapi({ example: 1 }),
+    _page: z.coerce.number().int().min(1).default(1),
+    _limit: z.coerce.number().int().min(1).max(100).default(10),
+  }),
+});
+
+/** ---------- Export generator ---------- */
+export function getOpenApiDocument() {
   const generator = new OpenApiGeneratorV3(registry.definitions);
   return generator.generateDocument({
     openapi: '3.0.0',
-    info: { title: 'JSONPlaceholder-style API', version: '1.0.0' },
-    servers: [{ url: 'http://localhost:3000' }],
+    info: {
+      title: 'JSONPlaceholder Clone API',
+      version: '1.0.0',
+      description:
+        'A JSONPlaceholder-compatible API built with Express + TypeScript + Zod. Pagination via `_page` & `_limit`.',
+    },
+    servers: [{ url: '/' }],
   });
 }
