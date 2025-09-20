@@ -1,0 +1,405 @@
+{
+  "info": {
+    "name": "JSONPlaceholder-Clone API",
+    "_postman_id": "a9b4b1d1-2b6b-4a84-9b67-8f2fb1c2a9e0",
+    "description": "Collection with explicit URL parts so the address bar always shows correctly. Covers health, docs, metrics, and CRUD for users, posts, comments, todos with pagination & filters.",
+    "schema": "https://schema.getpostman.com/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "scheme", "value": "http" },
+    { "key": "host", "value": "localhost" },
+    { "key": "port", "value": "3000" },
+    { "key": "page", "value": "1" },
+    { "key": "limit", "value": "10" },
+    { "key": "userId", "value": "1" },
+    { "key": "postId", "value": "1" },
+    { "key": "commentId", "value": "1" },
+    { "key": "todoId", "value": "1" }
+  ],
+  "item": [
+    {
+      "name": "Health & Meta",
+      "item": [
+        {
+          "name": "GET /health",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{scheme}}://{{host}}:{{port}}/health",
+              "protocol": "{{scheme}}",
+              "host": ["{{host}}"],
+              "port": "{{port}}",
+              "path": ["health"]
+            }
+          }
+        },
+        {
+          "name": "GET /api/health",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{scheme}}://{{host}}:{{port}}/api/health",
+              "protocol": "{{scheme}}",
+              "host": ["{{host}}"],
+              "port": "{{port}}",
+              "path": ["api", "health"]
+            }
+          }
+        },
+        {
+          "name": "GET /docs.json",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{scheme}}://{{host}}:{{port}}/docs.json",
+              "protocol": "{{scheme}}",
+              "host": ["{{host}}"],
+              "port": "{{port}}",
+              "path": ["docs.json"]
+            }
+          }
+        },
+        {
+          "name": "GET /metrics",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{scheme}}://{{host}}:{{port}}/metrics",
+              "protocol": "{{scheme}}",
+              "host": ["{{host}}"],
+              "port": "{{port}}",
+              "path": ["metrics"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "List Users",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{scheme}}://{{host}}:{{port}}/api/users?_page={{page}}&_limit={{limit}}",
+              "protocol": "{{scheme}}",
+              "host": ["{{host}}"],
+              "port": "{{port}}",
+              "path": ["api", "users"],
+              "query": [
+                { "key": "_page", "value": "{{page}}" },
+                { "key": "_limit", "value": "{{limit}}" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create User",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"New User\",\n  \"username\": \"newuser\",\n  \"email\": \"newuser@example.com\"\n}"
+            },
+            "url": {
+              "raw": "{{scheme}}://{{host}}:{{port}}/api/users",
+              "protocol": "{{scheme}}",
+              "host": ["{{host}}"],
+              "port": "{{port}}",
+              "path": ["api", "users"]
+            }
+          }
+        },
+        {
+          "name": "Get User by ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{scheme}}://{{host}}:{{port}}/api/users/{{userId}}",
+              "protocol": "{{scheme}}",
+              "host": ["{{host}}"],
+              "port": "{{port}}",
+              "path": ["api", "users", "{{userId}}"]
+            }
+          }
+        },
+        {
+          "name": "Update User",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{ \"name\": \"Updated User\" }" },
+            "url": {
+              "raw": "{{scheme}}://{{host}}:{{port}}/api/users/{{userId}}",
+              "protocol": "{{scheme}}",
+              "host": ["{{host}}"],
+              "port": "{{port}}",
+              "path": ["api", "users", "{{userId}}"]
+            }
+          }
+        },
+        {
+          "name": "Delete User",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{scheme}}://{{host}}:{{port}}/api/users/{{userId}}",
+              "protocol": "{{scheme}}",
+              "host": ["{{host}}"],
+              "port": "{{port}}",
+              "path": ["api", "users", "{{userId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Posts",
+      "item": [
+        {
+          "name": "List Posts (by userId)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{scheme}}://{{host}}:{{port}}/api/posts?userId={{userId}}&_page={{page}}&_limit={{limit}}",
+              "protocol": "{{scheme}}",
+              "host": ["{{host}}"],
+              "port": "{{port}}",
+              "path": ["api", "posts"],
+              "query": [
+                { "key": "userId", "value": "{{userId}}" },
+                { "key": "_page", "value": "{{page}}" },
+                { "key": "_limit", "value": "{{limit}}" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Post",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": {{userId}},\n  \"title\": \"My Post\",\n  \"body\": \"Hello world\"\n}"
+            },
+            "url": {
+              "raw": "{{scheme}}://{{host}}:{{port}}/api/posts",
+              "protocol": "{{scheme}}",
+              "host": ["{{host}}"],
+              "port": "{{port}}",
+              "path": ["api", "posts"]
+            }
+          }
+        },
+        {
+          "name": "Get Post by ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{scheme}}://{{host}}:{{port}}/api/posts/{{postId}}",
+              "protocol": "{{scheme}}",
+              "host": ["{{host}}"],
+              "port": "{{port}}",
+              "path": ["api", "posts", "{{postId}}"]
+            }
+          }
+        },
+        {
+          "name": "Update Post",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{ \"title\": \"Updated Title\" }" },
+            "url": {
+              "raw": "{{scheme}}://{{host}}:{{port}}/api/posts/{{postId}}",
+              "protocol": "{{scheme}}",
+              "host": ["{{host}}"],
+              "port": "{{port}}",
+              "path": ["api", "posts", "{{postId}}"]
+            }
+          }
+        },
+        {
+          "name": "Delete Post",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{scheme}}://{{host}}:{{port}}/api/posts/{{postId}}",
+              "protocol": "{{scheme}}",
+              "host": ["{{host}}"],
+              "port": "{{port}}",
+              "path": ["api", "posts", "{{postId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Comments",
+      "item": [
+        {
+          "name": "List Comments (by postId)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{scheme}}://{{host}}:{{port}}/api/comments?postId={{postId}}&_page={{page}}&_limit={{limit}}",
+              "protocol": "{{scheme}}",
+              "host": ["{{host}}"],
+              "port": "{{port}}",
+              "path": ["api", "comments"],
+              "query": [
+                { "key": "postId", "value": "{{postId}}" },
+                { "key": "_page", "value": "{{page}}" },
+                { "key": "_limit", "value": "{{limit}}" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Comment",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"postId\": {{postId}},\n  \"name\": \"A commenter\",\n  \"email\": \"commenter@example.com\",\n  \"body\": \"Nice post!\"\n}"
+            },
+            "url": {
+              "raw": "{{scheme}}://{{host}}:{{port}}/api/comments",
+              "protocol": "{{scheme}}",
+              "host": ["{{host}}"],
+              "port": "{{port}}",
+              "path": ["api", "comments"]
+            }
+          }
+        },
+        {
+          "name": "Get Comment by ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{scheme}}://{{host}}:{{port}}/api/comments/{{commentId}}",
+              "protocol": "{{scheme}}",
+              "host": ["{{host}}"],
+              "port": "{{port}}",
+              "path": ["api", "comments", "{{commentId}}"]
+            }
+          }
+        },
+        {
+          "name": "Update Comment",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{ \"body\": \"Edited\" }" },
+            "url": {
+              "raw": "{{scheme}}://{{host}}:{{port}}/api/comments/{{commentId}}",
+              "protocol": "{{scheme}}",
+              "host": ["{{host}}"],
+              "port": "{{port}}",
+              "path": ["api", "comments", "{{commentId}}"]
+            }
+          }
+        },
+        {
+          "name": "Delete Comment",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{scheme}}://{{host}}:{{port}}/api/comments/{{commentId}}",
+              "protocol": "{{scheme}}",
+              "host": ["{{host}}"],
+              "port": "{{port}}",
+              "path": ["api", "comments", "{{commentId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Todos",
+      "item": [
+        {
+          "name": "List Todos (by userId)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{scheme}}://{{host}}:{{port}}/api/todos?userId={{userId}}&_page={{page}}&_limit={{limit}}",
+              "protocol": "{{scheme}}",
+              "host": ["{{host}}"],
+              "port": "{{port}}",
+              "path": ["api", "todos"],
+              "query": [
+                { "key": "userId", "value": "{{userId}}" },
+                { "key": "_page", "value": "{{page}}" },
+                { "key": "_limit", "value": "{{limit}}" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Todo",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": {{userId}},\n  \"title\": \"Do something important\",\n  \"completed\": false\n}"
+            },
+            "url": {
+              "raw": "{{scheme}}://{{host}}:{{port}}/api/todos",
+              "protocol": "{{scheme}}",
+              "host": ["{{host}}"],
+              "port": "{{port}}",
+              "path": ["api", "todos"]
+            }
+          }
+        },
+        {
+          "name": "Get Todo by ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{scheme}}://{{host}}:{{port}}/api/todos/{{todoId}}",
+              "protocol": "{{scheme}}",
+              "host": ["{{host}}"],
+              "port": "{{port}}",
+              "path": ["api", "todos", "{{todoId}}"]
+            }
+          }
+        },
+        {
+          "name": "Update Todo",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{ \"completed\": true }" },
+            "url": {
+              "raw": "{{scheme}}://{{host}}:{{port}}/api/todos/{{todoId}}",
+              "protocol": "{{scheme}}",
+              "host": ["{{host}}"],
+              "port": "{{port}}",
+              "path": ["api", "todos", "{{todoId}}"]
+            }
+          }
+        },
+        {
+          "name": "Delete Todo",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{scheme}}://{{host}}:{{port}}/api/todos/{{todoId}}",
+              "protocol": "{{scheme}}",
+              "host": ["{{host}}"],
+              "port": "{{port}}",
+              "path": ["api", "todos", "{{todoId}}"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

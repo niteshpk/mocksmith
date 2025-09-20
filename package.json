@@ -1,0 +1,50 @@
+{
+  "name": "jsonplaceholder-clone-backend",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc -p tsconfig.json",
+    "start": "node --experimental-specifier-resolution=node dist/index.js",
+    "seed": "tsx src/db/seed.ts",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "test": "vitest",
+    "test:run": "vitest run --reporter=verbose",
+    "postinstall": "husky"
+  },
+  "dependencies": {
+    "better-sqlite3": "^11.8.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "express-prom-bundle": "^6.6.0",
+    "helmet": "^7.1.0",
+    "pino": "^9.4.0",
+    "pino-http": "^10.4.0",
+    "pino-pretty": "^11.2.2",
+    "swagger-ui-express": "^5.0.1",
+    "zod": "^3.23.8",
+    "@asteasolutions/zod-to-openapi": "^7.3.2"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/node": "^22.7.3",
+    "@typescript-eslint/eslint-plugin": "^8.7.0",
+    "@typescript-eslint/parser": "^8.7.0",
+    "eslint": "^9.12.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-import": "^2.31.0",
+    "prettier": "^3.3.3",
+    "supertest": "^7.0.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.2",
+    "vite": "^5.4.8",
+    "vitest": "^2.1.2"
+  }
+}
