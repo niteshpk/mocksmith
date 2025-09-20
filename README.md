@@ -36,7 +36,7 @@ npm start
 ## Consuming the API
 Example (fetch):
 ```ts
-const res = await fetch('http://localhost:3000/users');
+const res = await fetch('http://localhost:3000/api/users');
 const users = await res.json();
 ```
 
