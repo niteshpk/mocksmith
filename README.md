@@ -2,7 +2,6 @@
 
 A production-ready example backend that mirrors the core resources from https://jsonplaceholder.typicode.com:
 - **/users, /posts, /comments, /todos** (CRUD, with relations)
-- Optional: **/albums, /photos** (scaffolded for extension)
 
 ## Tech
 - **Node.js 20+, TypeScript, Express**
